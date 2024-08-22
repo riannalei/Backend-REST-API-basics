@@ -15,11 +15,9 @@ const fileStorage = multer.diskStorage({
     cb(null, 'images');
   },
   filename: (req, file, cb) => {
-    const date = new Date().toISOString().replace(/:/g, '-');
-    cb(null, date + '-' + file.originalname);
+    cb(null, new Date().toISOString() + '-' + file.originalname);
   }
 });
-
 
 const fileFilter = (req, file, cb) => {
   if (
@@ -63,9 +61,13 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    'mongodb+srv://riannalei:1527168Rxl%3B@cluster0.rwpe4.mongodb.net/shop'
+    'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/messages?retryWrites=true'
   )
   .then(result => {
-    app.listen(8080);
+    const server = app.listen(8080);
+    const io = require('./socket').init(server);
+    io.on('connection', socket => {
+      console.log('Client connected');
+    });
   })
   .catch(err => console.log(err));
